@@ -26,7 +26,7 @@ type Collector struct {
 	influxHost string
 	metrics    []Metric
 	tags       map[string]string
-	// databaseConnection 	Influx
+	// writeAPI 	InfluxWriteApi
 }
 
 // Contructor
