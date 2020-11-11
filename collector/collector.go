@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"time"
 
+	"github.com/influxdata/influxdb-client-go/v2/api"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
@@ -23,17 +24,24 @@ func (p *Point) AddField(name string, value interface{}) {
 // - sendToDB
 
 type Collector struct {
-	influxHost string
 	metrics    []Metric
-	tags       map[string]string
-	// writeAPI 	InfluxWriteApi
+	Tags       map[string]string
+	writeAPI	api.WriteAPIBlocking
+	interval	time.Duration
 }
 
-// Contructor
-func MakeCollector(influxHost string) Collector {
+// Constructor
+func MakeCollector(influxHost string, tags map[string]string, timeStr string) Collector {
 	collector := Collector{}
 	collector.connectDB(influxHost)
-
+	collector.Tags = tags
+	var err error
+	collector.interval, err = time.ParseDuration(timeStr)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Fatal("Can't parse time")
+	}
 	return collector
 }
 
@@ -60,16 +68,33 @@ func (c *Collector) getCurrentPoints() []Point {
 }
 
 func (c *Collector) connectDB(host string) {
-
+	client := influxdb2.NewClient("http://"+host, "admin:admin342")
+	c.writeAPI = client.WriteAPIBlocking("","metrics_test")
 }
 
 func (c *Collector) disconnectDB() {
-
 }
 
-func (c *Collector) sendToDB() {
-
+func (c *Collector) sendToDB(points []Point) {
+	for _, point := range points {
+		p := influxdb2.NewPoint("measurements",
+			mergeTags(point.Tags, c.Tags),
+			point.Fields,
+			time.Now())
+		c.writeAPI.WritePoint(context.Background(), p)
+	}
 }
+
+func mergeTags(ms ...map[string]string) map[string]string {
+	res := map[string]string{}
+	for _, m := range ms {
+		for k, v := range m {
+			res[k] = v
+		}
+	}
+	return res
+}
+
 
 func call() {
 	// Create a new client using an InfluxDB server base URL and an authentication token
