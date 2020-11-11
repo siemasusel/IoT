@@ -5,8 +5,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"time"
 
-	"github.com/influxdata/influxdb-client-go/v2/api"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
 type Point struct {
@@ -19,15 +19,14 @@ func (p *Point) AddField(name string, value interface{}) {
 }
 
 // TODO:
-// - collector constructor (tags, )
-// - connectToDB
 // - sendToDB
 
 type Collector struct {
-	metrics    []Metric
-	Tags       map[string]string
-	writeAPI	api.WriteAPIBlocking
-	interval	time.Duration
+	metrics      []Metric
+	Tags         map[string]string
+	influxClient influxdb2.Client
+	writeAPI     api.WriteAPIBlocking
+	interval     time.Duration
 }
 
 // Constructor
@@ -52,7 +51,7 @@ func (c *Collector) AddMetric(metric Metric) {
 func (c *Collector) getCurrentPoints() []Point {
 	points := []Point{}
 	for _, metric := range c.metrics {
-		point := Point{}
+		point := Point{Fields: map[string]interface{}{}}
 		value, err := metric.GetCurrentData()
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -68,21 +67,27 @@ func (c *Collector) getCurrentPoints() []Point {
 }
 
 func (c *Collector) connectDB(host string) {
-	client := influxdb2.NewClient("http://"+host, "admin:admin342")
-	c.writeAPI = client.WriteAPIBlocking("","metrics_test")
+	c.influxClient = influxdb2.NewClient("http://"+host, "admin:admin342")
+	c.writeAPI = c.influxClient.WriteAPIBlocking("", "metrics_test")
 }
 
 func (c *Collector) disconnectDB() {
+	c.influxClient.Close()
 }
 
 func (c *Collector) sendToDB(points []Point) {
 	for _, point := range points {
-		p := influxdb2.NewPoint("measurements",
+		log.Info(point.Fields)
+		p := influxdb2.NewPoint("stat",
 			mergeTags(point.Tags, c.Tags),
 			point.Fields,
 			time.Now())
 		c.writeAPI.WritePoint(context.Background(), p)
 	}
+}
+
+func (c *Collector) RunLoop() {
+	c.sendToDB(c.getCurrentPoints())
 }
 
 func mergeTags(ms ...map[string]string) map[string]string {
@@ -93,29 +98,4 @@ func mergeTags(ms ...map[string]string) map[string]string {
 		}
 	}
 	return res
-}
-
-
-func call() {
-	// Create a new client using an InfluxDB server base URL and an authentication token
-	client := influxdb2.NewClient("http://localhost:8086", "admin:admin342")
-	// Use blocking write client for writes to desired bucket
-	writeAPI := client.WriteAPIBlocking("", "metrics_test")
-	// Create point using full params constructor
-	p := influxdb2.NewPoint("stat",
-		map[string]string{"unit": "temperature"},
-		map[string]interface{}{"avg": 24.5, "max": 45.0},
-		time.Now())
-	// write point immediately
-	writeAPI.WritePoint(context.Background(), p)
-	// // Create point using fluent style
-	// p = influxdb2.NewPointWithMeasurement("stat").
-	// 	AddTag("unit", "temperature").
-	// 	AddField("avg", 23.2).
-	// 	AddField("max", 45.0).
-	// 	SetTime(time.Now())
-	// writeAPI.WritePoint(context.Background(), p)
-
-	// Ensures background processes finishes
-	client.Close()
 }
