@@ -9,5 +9,5 @@ func FetchTemperature() (interface{}, error) {
 }
 
 func MakeTempertatureMetric() collector.Metric {
-	return collector.MakeMetric("temperature", FetchTemperature, map[string]string{"unit": "cellsius"})
+	return collector.MakeMetric("temperature", FetchTemperature, map[string]string{"unit": "celsius"})
 }
