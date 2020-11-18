@@ -1,6 +1,8 @@
 package main
 
 // ssh -Llocalhost:8086:10.72.1.106:8086 jtomasik@pluton.kt.agh.edu.pl
+// GOOS=linux GOARCH=arm64 go build entry.go
+// GOOS=linux GOARCH=arm GOARM=7 go build entry.go
 import (
 	"flag"
 	"strconv"
