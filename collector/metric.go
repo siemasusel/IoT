@@ -1,16 +1,16 @@
 package collector
 
 type Metric struct {
-	Name    string
-	Tags    map[string]string
-	Handler func() (interface{}, error)
+	Measurement string
+	Tags        map[string]string
+	Handler     func() (interface{}, error)
 }
 
-func MakeMetric(name string, handler func() (interface{}, error), tags map[string]string) Metric {
+func MakeMetric(measurement string, handler func() (interface{}, error), tags map[string]string) Metric {
 	return Metric{
-		Name:    name,
-		Handler: handler,
-		Tags:    tags,
+		Measurement: measurement,
+		Handler:     handler,
+		Tags:        tags,
 	}
 }
 

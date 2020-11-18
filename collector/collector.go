@@ -11,8 +11,9 @@ import (
 )
 
 type Point struct {
-	Fields map[string]interface{}
-	Tags   map[string]string
+	Measurement string
+	Fields      map[string]interface{}
+	Tags        map[string]string
 }
 
 func (p *Point) AddField(name string, value interface{}) {
@@ -52,11 +53,12 @@ func (c *Collector) getCurrentPoints() []Point {
 		value, err := metric.GetCurrentData()
 		if err != nil {
 			log.WithFields(log.Fields{
-				"name": metric.Name,
+				"name": metric.Measurement,
 			}).Warn("Can't get field")
 			continue
 		}
-		point.AddField(metric.Name, value)
+		point.Measurement = metric.Measurement
+		point.AddField("value", value)
 		point.Tags = metric.Tags
 		points = append(points, point)
 	}
@@ -73,17 +75,20 @@ func (c *Collector) Stop() {
 }
 
 func (c *Collector) sendToDB(points []Point) {
-	p := influxdb2.NewPointWithMeasurement("stat")
-	addTags(p, c.tags)
+	time := time.Now()
 	for _, point := range points {
-		log.Info(point.Fields)
-		addTags(p, point.Tags)
+		p := influxdb2.NewPointWithMeasurement(point.Measurement)
+		addTags(p, c.tags, point.Tags)
 		addFields(p, point.Fields)
+		p.SetTime(time)
+
+		log.Info(point.Fields)
 		err := c.writeAPI.WritePoint(context.Background(), p)
 		if err != nil {
 			log.WithFields(log.Fields{
-				"err": err,
-			}).Fatal("Can't send data")
+				"err":         err,
+				"measurement": point.Measurement,
+			}).Fatal("Can't send point")
 		}
 	}
 }
@@ -103,24 +108,28 @@ func (c *Collector) RunLoop() {
 	}
 }
 
-func addTags(point *write.Point, tags map[string]string) {
-	for key, value := range tags {
-		point.AddTag(key, value)
-	}
-}
-
-func addFields(point *write.Point, fields map[string]interface{}) {
-	for key, value := range fields {
-		point.AddField(key, value)
-	}
-}
-
-func mergeTags(ms ...map[string]string) map[string]string {
-	res := map[string]string{}
-	for _, m := range ms {
-		for k, v := range m {
-			res[k] = v
+func addTags(point *write.Point, tagsArgs ...map[string]string) {
+	for _, tags := range tagsArgs {
+		for key, value := range tags {
+			point.AddTag(key, value)
 		}
 	}
-	return res
 }
+
+func addFields(point *write.Point, fieldsArgs ...map[string]interface{}) {
+	for _, fields := range fieldsArgs {
+		for key, value := range fields {
+			point.AddField(key, value)
+		}
+	}
+}
+
+// func mergeTags(ms ...map[string]string) map[string]string {
+// 	res := map[string]string{}
+// 	for _, m := range ms {
+// 		for k, v := range m {
+// 			res[k] = v
+// 		}
+// 	}
+// 	return res
+// }
