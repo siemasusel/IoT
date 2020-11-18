@@ -7,6 +7,7 @@ import (
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
 )
 
 type Point struct {
@@ -23,24 +24,20 @@ func (p *Point) AddField(name string, value interface{}) {
 
 type Collector struct {
 	metrics      []Metric
-	Tags         map[string]string
+	tags         map[string]string
+	interval     time.Duration
+	dbName       string
 	influxClient influxdb2.Client
 	writeAPI     api.WriteAPIBlocking
-	interval     time.Duration
 }
 
 // Constructor
-func MakeCollector(influxHost string, tags map[string]string, timeStr string) Collector {
+func MakeCollector(influxHost string, tags map[string]string, interval time.Duration, dbName string) Collector {
 	collector := Collector{}
+	collector.tags = tags
+	collector.interval = interval
+	collector.dbName = dbName
 	collector.connectDB(influxHost)
-	collector.Tags = tags
-	var err error
-	collector.interval, err = time.ParseDuration(timeStr)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Fatal("Can't parse time")
-	}
 	return collector
 }
 
@@ -68,26 +65,54 @@ func (c *Collector) getCurrentPoints() []Point {
 
 func (c *Collector) connectDB(host string) {
 	c.influxClient = influxdb2.NewClient("http://"+host, "admin:admin342")
-	c.writeAPI = c.influxClient.WriteAPIBlocking("", "metrics_test")
+	c.writeAPI = c.influxClient.WriteAPIBlocking("", c.dbName)
 }
 
-func (c *Collector) disconnectDB() {
+func (c *Collector) Stop() {
 	c.influxClient.Close()
 }
 
 func (c *Collector) sendToDB(points []Point) {
+	p := influxdb2.NewPointWithMeasurement("stat")
+	addTags(p, c.tags)
 	for _, point := range points {
 		log.Info(point.Fields)
-		p := influxdb2.NewPoint("stat",
-			mergeTags(point.Tags, c.Tags),
-			point.Fields,
-			time.Now())
-		c.writeAPI.WritePoint(context.Background(), p)
+		addTags(p, point.Tags)
+		addFields(p, point.Fields)
+		err := c.writeAPI.WritePoint(context.Background(), p)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"err": err,
+			}).Fatal("Can't send data")
+		}
 	}
 }
 
-func (c *Collector) RunLoop() {
+func (c *Collector) runOnce() {
 	c.sendToDB(c.getCurrentPoints())
+}
+
+func (c *Collector) RunLoop() {
+	uptimeTicker := time.NewTicker(c.interval)
+	defer uptimeTicker.Stop()
+	for {
+		select {
+		case <-uptimeTicker.C:
+			go c.runOnce()
+		}
+	}
+}
+
+func addTags(point *write.Point, tags map[string]string) {
+	for key, value := range tags {
+		point.AddTag(key, value)
+	}
+}
+
+func addFields(point *write.Point, fields map[string]interface{}) {
+	for key, value := range fields {
+		point.AddField(key, value)
+	}
 }
 
 func mergeTags(ms ...map[string]string) map[string]string {
