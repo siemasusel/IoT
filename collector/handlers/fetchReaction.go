@@ -1,11 +1,18 @@
 package handlers
 
 import (
+	"io/ioutil"
+	"log"
+
 	"github.com/siemasusel/IoT/collector"
 )
 
 func FetchReaction() (interface{}, error) {
-	return 10, nil
+	content, err := ioutil.ReadFile("/var/sensors/ph.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(content), nil
 }
 
 func MakeReactionMetric() collector.Metric {

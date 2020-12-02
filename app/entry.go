@@ -48,7 +48,7 @@ func main() {
 	app := collector.MakeCollector("localhost:8086", tags, interval, dbName)
 	defer app.Stop()
 	app.AddMetric(handlers.MakeTempertatureMetric())
-	app.AddMetric(handlers.MakeReactionMetric())
+	// app.AddMetric(handlers.MakeReactionMetric())
 	app.AddMetric(handlers.MakeMovementMetric())
 	app.RunLoop()
 }
