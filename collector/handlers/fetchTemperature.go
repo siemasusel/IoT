@@ -8,7 +8,7 @@ import (
 )
 
 func FetchTemperature() (interface{}, error) {
-	content, err := ioutil.ReadFile("/var/sensors/DHT22.txt")
+	content, err := ioutil.ReadFile("/var/sensors/DHT_22.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
