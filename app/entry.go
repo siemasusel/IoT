@@ -1,18 +1,15 @@
 package main
 
 // ssh -Llocalhost:8086:10.72.1.106:8086 jtomasik@pluton.kt.agh.edu.pl
+// GOOS=linux GOARCH=arm64 go build entry.go
 // GOOS=linux GOARCH=arm GOARM=7 go build entry.go
-// ssh -Llocalhost:8080:localhost:27000 jtomasik@pluton.kt.agh.edu.pl # raspberry
-// ssh -R 27000:127.0.0.1:8020 jtomasik@pluton.kt.agh.edu.pl # server
-// ssh -R 22000:127.0.0.1:27000 root@10.72.1.106 # pluton
 import (
 	"flag"
 	"strconv"
 	"time"
 
-	// "github.com/siemasusel/IoT/collector"
-	// "github.com/siemasusel/IoT/collector/handlers"
-	reciever "github.com/siemasusel/IoT/receiver"
+	"github.com/siemasusel/IoT/collector"
+	"github.com/siemasusel/IoT/collector/handlers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -46,14 +43,13 @@ func init() {
 }
 
 func main() {
-	// interval := parseInterval(intervalStr)
-	// tags := parseTags(deviceId)
-	app := reciever.MakeReciever("localhost", 9000)
-	app.Run()
-	// app := collector.MakeCollector("localhost:8086", tags, interval, dbName)
-	// defer app.Stop()
-	// app.AddMetric(handlers.MakeTempertatureMetric())
+	interval := parseInterval(intervalStr)
+	tags := parseTags(deviceId)
+	app := collector.MakeCollector("localhost:8086", tags, interval, dbName)
+	defer app.Stop()
+	app.AddMetric(handlers.MakeTempertatureMetric())
+	app.AddMetric(handlers.MakeHumidityMetric())
+	app.AddMetric(handlers.MakeMovementMetric())
 	// app.AddMetric(handlers.MakeReactionMetric())
-	// app.AddMetric(handlers.MakeMovementMetric())
-	// app.RunLoop()
+	app.RunLoop()
 }
