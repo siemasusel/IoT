@@ -46,9 +46,53 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func HumidityHandler(w http.ResponseWriter, r *http.Request) {
+	log.Info("Endpoint Hit: HumidityHandler")
+
+	switch r.Method {
+	case "GET":
+		log.Info("GET current Humidity")
+	case "POST":
+		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+			return
+		}
+		fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
+		newHumidity := r.FormValue("humidity_value")
+		log.Info("New humidity: " + newHumidity)
+		fmt.Fprintf(w, "New humidity = %s\n", newHumidity)
+	default:
+		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
+	}
+}
+
+func FoodHandler(w http.ResponseWriter, r *http.Request) {
+	log.Info("Endpoint Hit: FoodHandler")
+
+	switch r.Method {
+	case "GET":
+		log.Info("Last feeding: ")
+	case "POST":
+		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+			return
+		}
+		fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
+		newFeed := r.FormValue("feed_value")
+		log.Info("Feed the animal: " + newFeed)
+		fmt.Fprintf(w, "Feed the animal = %s\n", newFeed)
+	default:
+		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
+	}
+}
+
 func (rec *Reciever) Run() {
 	r := mux.NewRouter()
 	r.HandleFunc("/temperature", TemperatureHandler)
+	r.HandleFunc("/humidity", HumidityHandler)
+	r.HandleFunc("/food", FoodHandler)
 	// http.Handle("/", r)
 	log.Info("Starting server for HTTP POST on port " + rec.port + "...")
 
