@@ -57,10 +57,23 @@ func getCurrentTemperature() (float64, error) {
 }
 
 func getTemperatureOutput(currentTemp float64, newTemp float64) {
+	file := "/var/instructions/instructions.txt"
 	if currentTemp < newTemp {
 		log.Info("Heat")
+		cmd := exec.Command("tempUp > " + file)
+		b, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Printf("Running command failed with error:  %v", err)
+		}
+		fmt.Printf("%s\n", string(b))
 	} else if currentTemp > newTemp {
 		log.Info("Cool")
+		cmd := exec.Command("tempDown > " + file)
+		b, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Printf("Running command failed with error:  %v", err)
+		}
+		fmt.Printf("%s\n", string(b))
 	} else {
 		log.Info("temperature OK")
 	}
@@ -95,13 +108,13 @@ func getCurrentHumidity() (float64, error) {
 	return strconv.ParseFloat(string(content), 64)
 }
 
-func getHumidityOutput(currentTemp float64, newTemp float64) {
-	if currentTemp < newTemp {
-		log.Info("Heat")
-	} else if currentTemp > newTemp {
-		log.Info("Cool")
+func getHumidityOutput(currentHumidity float64, newHumidity float64) {
+	if currentHumidity < newHumidity {
+		log.Info("Too dry")
+	} else if currentHumidity > newHumidity {
+		log.Info("Too wet")
 	} else {
-		log.Info("temperature OK")
+		log.Info("Humidity OK")
 	}
 }
 
@@ -121,6 +134,7 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 		newFeed := r.FormValue("feed_value")
 		log.Info("Feed the animal: " + newFeed)
 		fmt.Fprintf(w, "Feed the animal = %s\n", newFeed)
+		file := "/var/instructions/instructions.txt"
 		cmd := exec.Command("feed > " + file)
 		b, err := cmd.CombinedOutput()
 		if err != nil {
@@ -137,7 +151,7 @@ func (rec *Receiver) Run() {
 	r.HandleFunc("/temperature", TemperatureHandler)
 	r.HandleFunc("/humidity", HumidityHandler)
 	r.HandleFunc("/food", FoodHandler)
-	cmd := exec.Command("python instruction.py")
+	cmd := exec.Command("python /var/instructions/instruction.py")
 	b, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("Failed to run the script with error:  %v", err)

@@ -1,4 +1,4 @@
-f = open('instructins.txt','r')
+f = open('instructions.txt','r')
 instruction = f.readline()
 if instruction == "tempUp":
     print("Temperature will be raised")
