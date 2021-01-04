@@ -151,12 +151,6 @@ func (rec *Receiver) Run() {
 	r.HandleFunc("/temperature", TemperatureHandler)
 	r.HandleFunc("/humidity", HumidityHandler)
 	r.HandleFunc("/food", FoodHandler)
-	cmd := exec.Command("python /var/instructions/instruction.py")
-	b, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Printf("Failed to run the script with error:  %v", err)
-	}
-	fmt.Printf("%s\n", string(b))
 	// http.Handle("/", r)
 	log.Info("Starting server for HTTP POST on port " + rec.port + "...")
 
