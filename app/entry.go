@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/siemasusel/IoT/collector"
+	"github.com/siemasusel/IoT/collector/handlers"
 	"github.com/siemasusel/IoT/receiver"
 	log "github.com/sirupsen/logrus"
 )
@@ -42,15 +44,15 @@ func init() {
 }
 
 func main() {
-	// interval := parseInterval(intervalStr)
-	// tags := parseTags(deviceId)
-	app := receiver.MakeReceiver("localhost", 9000)
-	app.Run()
-	// app := collector.MakeCollector("localhost:8086", tags, interval, dbName)
-	// defer app.Stop()
-	// app.AddMetric(handlers.MakeTempertatureMetric())
-	// app.AddMetric(handlers.MakeHumidityMetric())
-	// app.AddMetric(handlers.MakeMovementMetric())
-	// // app.AddMetric(handlers.MakeReactionMetric())
-	// app.RunLoop()
+	interval := parseInterval(intervalStr)
+	tags := parseTags(deviceId)
+	apprecv := receiver.MakeReceiver("localhost", 9000)
+	apprecv.Run()
+	app := collector.MakeCollector("localhost:8086", tags, interval, dbName)
+	defer app.Stop()
+	app.AddMetric(handlers.MakeTempertatureMetric())
+	app.AddMetric(handlers.MakeHumidityMetric())
+	app.AddMetric(handlers.MakeMovementMetric())
+	app.AddMetric(handlers.MakeReactionMetric())
+	app.RunLoop()
 }
