@@ -16,15 +16,8 @@ type Receiver struct {
 	port string
 }
 
-<<<<<<< HEAD
-var file string = "instructions.txt"
-
-func MakeReciever(ip string, port int) Reciever {
-	return Reciever{
-=======
 func MakeReceiver(ip string, port int) Receiver {
 	return Receiver{
->>>>>>> 0caab8428f9d2568910ca8077611d975362f0daf
 		port: strconv.Itoa(port),
 	}
 }
@@ -41,19 +34,6 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
 		}
-<<<<<<< HEAD
-		fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
-		newTemperature := r.FormValue("temp_value")
-		log.Info("New temperature: " + newTemperature)
-		fmt.Fprintf(w, "New temperature = %s\n", newTemperature)
-		// TempCheck
-		cmd := exec.Command("tempUp > " + file)
-		b, err := cmd.CombinedOutput()
-		if err != nil {
-			log.Printf("Running command failed with error:  %v", err)
-		}
-		fmt.Printf("%s\n", string(b))
-=======
 		newTemperatureStr := r.FormValue("temp_value")
 		log.Info("New temperature: " + newTemperatureStr)
 		newTemperature, err := strconv.ParseFloat(newTemperatureStr, 64)
@@ -63,7 +43,6 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 		getTemperatureOutput(currentTemperature, newTemperature)
 
 		fmt.Fprintf(w, "New temperature = %s\n", newTemperatureStr)
->>>>>>> 0caab8428f9d2568910ca8077611d975362f0daf
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
