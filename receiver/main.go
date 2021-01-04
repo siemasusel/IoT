@@ -3,6 +3,7 @@ package reciever
 import (
 	"fmt"
 	"net/http"
+	"os/exec"
 	"strconv"
 	"time"
 
@@ -13,6 +14,8 @@ import (
 type Reciever struct {
 	port string
 }
+
+var file string = "instructions.txt"
 
 func MakeReciever(ip string, port int) Reciever {
 	return Reciever{
@@ -41,6 +44,13 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 		newTemperature := r.FormValue("temp_value")
 		log.Info("New temperature: " + newTemperature)
 		fmt.Fprintf(w, "New temperature = %s\n", newTemperature)
+		// TempCheck
+		cmd := exec.Command("tempUp > " + file)
+		b, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Printf("Running command failed with error:  %v", err)
+		}
+		fmt.Printf("%s\n", string(b))
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
@@ -83,6 +93,12 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 		newFeed := r.FormValue("feed_value")
 		log.Info("Feed the animal: " + newFeed)
 		fmt.Fprintf(w, "Feed the animal = %s\n", newFeed)
+		cmd := exec.Command("feed > " + file)
+		b, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Printf("Running command failed with error:  %v", err)
+		}
+		fmt.Printf("%s\n", string(b))
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
@@ -93,6 +109,12 @@ func (rec *Reciever) Run() {
 	r.HandleFunc("/temperature", TemperatureHandler)
 	r.HandleFunc("/humidity", HumidityHandler)
 	r.HandleFunc("/food", FoodHandler)
+	cmd := exec.Command("python instruction.py")
+	b, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Printf("Failed to run the script with error:  %v", err)
+	}
+	fmt.Printf("%s\n", string(b))
 	// http.Handle("/", r)
 	log.Info("Starting server for HTTP POST on port " + rec.port + "...")
 
