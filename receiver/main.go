@@ -1,7 +1,8 @@
-package reciever
+package receiver
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os/exec"
 	"strconv"
@@ -11,25 +12,25 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type Reciever struct {
+type Receiver struct {
 	port string
 }
 
+<<<<<<< HEAD
 var file string = "instructions.txt"
 
 func MakeReciever(ip string, port int) Reciever {
 	return Reciever{
+=======
+func MakeReceiver(ip string, port int) Receiver {
+	return Receiver{
+>>>>>>> 0caab8428f9d2568910ca8077611d975362f0daf
 		port: strconv.Itoa(port),
 	}
 }
 
 func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 	log.Info("Endpoint Hit: TemperatureHandler")
-
-	// if r.URL.Path != "/" {
-	// 	http.Error(w, "404 not found.", http.StatusNotFound)
-	// 	return
-	// }
 
 	switch r.Method {
 	case "GET":
@@ -40,6 +41,7 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
 		}
+<<<<<<< HEAD
 		fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
 		newTemperature := r.FormValue("temp_value")
 		log.Info("New temperature: " + newTemperature)
@@ -51,8 +53,37 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Running command failed with error:  %v", err)
 		}
 		fmt.Printf("%s\n", string(b))
+=======
+		newTemperatureStr := r.FormValue("temp_value")
+		log.Info("New temperature: " + newTemperatureStr)
+		newTemperature, err := strconv.ParseFloat(newTemperatureStr, 64)
+		checkFatal(err)
+		currentTemperature, err := getCurrentTemperature()
+		checkFatal(err)
+		getTemperatureOutput(currentTemperature, newTemperature)
+
+		fmt.Fprintf(w, "New temperature = %s\n", newTemperatureStr)
+>>>>>>> 0caab8428f9d2568910ca8077611d975362f0daf
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
+	}
+}
+
+func getCurrentTemperature() (float64, error) {
+	content, err := ioutil.ReadFile("/var/sensors/DHT22_temp.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return strconv.ParseFloat(string(content), 64)
+}
+
+func getTemperatureOutput(currentTemp float64, newTemp float64) {
+	if currentTemp < newTemp {
+		log.Info("Heat")
+	} else if currentTemp > newTemp {
+		log.Info("Cool")
+	} else {
+		log.Info("temperature OK")
 	}
 }
 
@@ -74,6 +105,24 @@ func HumidityHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "New humidity = %s\n", newHumidity)
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
+	}
+}
+
+func getCurrentHumidity() (float64, error) {
+	content, err := ioutil.ReadFile("/var/sensors/DHT22_humidity.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return strconv.ParseFloat(string(content), 64)
+}
+
+func getHumidityOutput(currentTemp float64, newTemp float64) {
+	if currentTemp < newTemp {
+		log.Info("Heat")
+	} else if currentTemp > newTemp {
+		log.Info("Cool")
+	} else {
+		log.Info("temperature OK")
 	}
 }
 
@@ -104,7 +153,7 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (rec *Reciever) Run() {
+func (rec *Receiver) Run() {
 	r := mux.NewRouter()
 	r.HandleFunc("/temperature", TemperatureHandler)
 	r.HandleFunc("/humidity", HumidityHandler)
@@ -138,3 +187,9 @@ func (rec *Reciever) Run() {
 // 		fmt.Println(r.Form["task"])
 // 	}
 // }
+
+func checkFatal(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
