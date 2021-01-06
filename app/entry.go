@@ -1,7 +1,7 @@
 package main
 
 // ssh -Llocalhost:8086:10.72.1.106:8086 jtomasik@pluton.kt.agh.edu.pl
-// ssh -Llocalhost:8080:localhost:27000 jtomasik@pluton.kt.agh.edu.pl # client
+// ssh -Llocalhost:9944:localhost:27000 jtomasik@pluton.kt.agh.edu.pl # server IOT
 // ssh -R 27000:127.0.0.1:9000 jtomasik@pluton.kt.agh.edu.pl # raspberry
 // GOOS=linux GOARCH=arm64 go build entry.go
 // GOOS=linux GOARCH=arm GOARM=7 go build entry.go
