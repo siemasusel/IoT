@@ -17,5 +17,5 @@ func FetchMovement() (interface{}, error) {
 }
 
 func MakeMovementMetric() collector.Metric {
-	return collector.MakeMetric("movement", FetchMovement, map[string]string{"unit": "celsius"})
+	return collector.MakeMetric("movement", FetchMovement, map[string]string{"unit": "timestamp"})
 }
