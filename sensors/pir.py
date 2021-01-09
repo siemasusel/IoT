@@ -7,10 +7,10 @@ import datetime
 
 def detect():
     while True:
-        if GPIO.input(12) == True:
-            print(str(datetime.datetime.now()) + "    Your animal moved.")
-            file2 = open("textFile.txt", "a")
-            file2.write(str(datetime.datetime.now()) + "    Your animal moved\n")
+        if GPIO.input(18) == True:
+            print(str(time.time()) + "    Movement detected.")
+            file2 = open("pir.txt", "w")
+            file2.write(str(time.time()))
             file2.close()
         else:
             print(str(datetime.datetime.now()) + "    No movement.")
@@ -20,19 +20,16 @@ def detect():
 def motion_detect():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(12, GPIO.IN)
-    motion = GPIO.input(12)
+    GPIO.setup(18, GPIO.IN)
+    motion = GPIO.input(18)
     GPIO.cleanup()
     return motion
 
 if __name__ == "__main__":
     
-    #!today = datetime.today()
-    
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(12, GPIO.IN)
-    file = open("textFile.txt", "w")
-    file.write("Hello!\n\n")
+    GPIO.setup(18, GPIO.IN)
+    file = open("pir.txt", "w")
     detect()
     GPIO.cleanup()
