@@ -186,8 +186,9 @@ func (rec *Receiver) Run() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-
-	log.Fatal(srv.ListenAndServe())
+	go func() {
+		log.Fatal(srv.ListenAndServe())
+	}()
 }
 
 func checkFatal(err error) {
