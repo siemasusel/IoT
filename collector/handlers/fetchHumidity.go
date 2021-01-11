@@ -3,6 +3,7 @@ package handlers
 import (
 	"io/ioutil"
 	"log"
+	"strings"
 
 	"github.com/siemasusel/IoT/collector"
 )
@@ -13,7 +14,7 @@ func FetchHumidity() (interface{}, error) {
 		log.Fatal(err)
 	}
 
-	return string(content), nil
+	return strings.TrimSuffix(string(content), "\n"), nil
 }
 
 func MakeHumidityMetric() collector.Metric {

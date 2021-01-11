@@ -3,6 +3,7 @@ package handlers
 import (
 	"io/ioutil"
 	"log"
+	"strings"
 
 	"github.com/siemasusel/IoT/collector"
 )
@@ -12,7 +13,7 @@ func FetchReaction() (interface{}, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return string(content), nil
+	return strings.TrimSuffix(string(content), "\n"), nil
 }
 
 func MakeReactionMetric() collector.Metric {
