@@ -49,12 +49,12 @@ func init() {
 func main() {
 	interval := parseInterval(intervalStr)
 	tags := parseTags(deviceId)
+	apprecv := receiver.MakeReceiver("localhost", 9000)
+	apprecv.Run()
 	app := collector.MakeCollector("localhost:8086", tags, interval, dbName)
 	app.AddMetric(handlers.MakeTempertatureMetric())
 	app.AddMetric(handlers.MakeHumidityMetric())
 	app.AddMetric(handlers.MakeMovementMetric())
 	app.AddMetric(handlers.MakeReactionMetric())
 	app.RunLoop()
-	apprecv := receiver.MakeReceiver("localhost", 9000)
-	apprecv.Run()
 }
