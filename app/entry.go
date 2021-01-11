@@ -4,8 +4,8 @@ package main
 // ssh -Llocalhost:9944:localhost:27000 jtomasik@pluton.kt.agh.edu.pl # server IOT (serwer:9944 -> pluton -> pluton:27000)
 // ssh -R 27000:127.0.0.1:9000 jtomasik@pluton.kt.agh.edu.pl # raspberry (reverse pluton:27000 -> raspberry -> raspberry:9000)
 // ssh -Llocalhost:8080:10.72.1.106:80 jtomasik@pluton.kt.agh.edu.pl # client (client:8080 -> pluton -> apache)
-// GOOS=linux GOARCH=arm64 go build entry.go
 // GOOS=linux GOARCH=arm GOARM=7 go build entry.go
+
 import (
 	"flag"
 	"strconv"
@@ -52,6 +52,7 @@ func main() {
 	apprecv := receiver.MakeReceiver("localhost", 9000)
 	apprecv.Run()
 	app := collector.MakeCollector("localhost:8086", tags, interval, dbName)
+	app.RunLoop()
 	defer app.Stop()
 	app.AddMetric(handlers.MakeTempertatureMetric())
 	app.AddMetric(handlers.MakeHumidityMetric())
