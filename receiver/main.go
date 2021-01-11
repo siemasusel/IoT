@@ -1,6 +1,7 @@
 package receiver
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -16,6 +17,18 @@ type Receiver struct {
 	port string
 }
 
+type TempValue struct {
+	Value string `json:"tempValue"`
+}
+
+type HumidityValue struct {
+	Value string `json:"humidityValue"`
+}
+
+type FeedValue struct {
+	Value string `json:"feedValue"`
+}
+
 func MakeReceiver(ip string, port int) Receiver {
 	return Receiver{
 		port: strconv.Itoa(port),
@@ -29,20 +42,23 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		log.Info("GET current Temperature")
 	case "POST":
-		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-		if err := r.ParseForm(); err != nil {
-			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		var temperature TempValue
+
+		// Try to decode the request body into the struct. If there is an error,
+		// respond to the client with the error message and a 400 status code.
+		err := json.NewDecoder(r.Body).Decode(&temperature)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		newTemperatureStr := r.FormValue("temp_value")
-		log.Info("New temperature: " + newTemperatureStr)
-		newTemperature, err := strconv.ParseFloat(newTemperatureStr, 64)
+		log.Info("New temperature: " + temperature.Value)
+		newTemperature, err := strconv.ParseFloat(temperature.Value, 64)
 		checkFatal(err)
 		currentTemperature, err := getCurrentTemperature()
 		checkFatal(err)
 		getTemperatureOutput(currentTemperature, newTemperature)
 
-		fmt.Fprintf(w, "New temperature = %s\n", newTemperatureStr)
+		fmt.Fprintf(w, "New temperature = %s\n", temperature.Value)
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
@@ -86,13 +102,17 @@ func HumidityHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		log.Info("GET current Humidity")
 	case "POST":
-		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-		if err := r.ParseForm(); err != nil {
-			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		var humidity HumidityValue
+
+		// Try to decode the request body into the struct. If there is an error,
+		// respond to the client with the error message and a 400 status code.
+		err := json.NewDecoder(r.Body).Decode(&humidity)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
-		newHumidity := r.FormValue("humidity_value")
+		newHumidity := humidity.Value
+		fmt.Fprintf(w, "Post from website! JSON humidity = %v\n", newHumidity)
 		log.Info("New humidity: " + newHumidity)
 		fmt.Fprintf(w, "New humidity = %s\n", newHumidity)
 	default:
@@ -125,13 +145,18 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		log.Info("Last feeding: ")
 	case "POST":
-		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-		if err := r.ParseForm(); err != nil {
-			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		var feed FeedValue
+
+		// Try to decode the request body into the struct. If there is an error,
+		// respond to the client with the error message and a 400 status code.
+		err := json.NewDecoder(r.Body).Decode(&feed)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
-		newFeed := r.FormValue("feed_value")
+		fmt.Fprintf(w, "Post from website! JSON feed = %v\n", feed.Value)
+
+		newFeed := feed.Value
 		log.Info("Feed the animal: " + newFeed)
 		fmt.Fprintf(w, "Feed the animal = %s\n", newFeed)
 		file := "/var/sensors/instructions.txt"
@@ -164,16 +189,6 @@ func (rec *Receiver) Run() {
 
 	log.Fatal(srv.ListenAndServe())
 }
-
-// func show(w http.ResponseWriter, r *http.Request) {
-// 	if r.Method == "GET" {
-// 		t, _ := template.ParseFiles("show.gtpl")
-// 		t.Execute(w, nil)
-// 	} else {
-// 		r.ParseForm()
-// 		fmt.Println(r.Form["task"])
-// 	}
-// }
 
 func checkFatal(err error) {
 	if err != nil {
