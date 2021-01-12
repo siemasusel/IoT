@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -33,6 +32,13 @@ type FeedValue struct {
 func MakeReceiver(ip string, port int) Receiver {
 	return Receiver{
 		port: strconv.Itoa(port),
+	}
+}
+
+func printToFile(fileName string, text string) {
+	err := ioutil.WriteFile(fileName, []byte(text), 0666)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
@@ -77,19 +83,11 @@ func getCurrentTemperature() (float64, error) {
 func getTemperatureOutput(currentTemp float64, newTemp float64) {
 	file := "/var/sensors/instructions.txt"
 	if currentTemp < newTemp {
-		log.Info("Heat debug")
-		cmd := exec.Command("/bin/bash -c 'echo temp_high > " + file + "'")
-		err := cmd.Run()
-		if err != nil {
-			log.Fatalf("Running command failed with error:  %v", err)
-		}
+		log.Info("Heat")
+		printToFile(file, "temp_high")
 	} else if currentTemp > newTemp {
 		log.Info("Cool")
-		cmd := exec.Command("/bin/bash -c 'echo temp_low > " + file + "'")
-		err := cmd.Run()
-		if err != nil {
-			log.Fatalf("Running command failed with error:  %v", err)
-		}
+		printToFile(file, "temp_low")
 	} else {
 		log.Info("temperature OK")
 	}
@@ -163,11 +161,7 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 		log.Info("Feed the animal: " + newFeed)
 		// fmt.Fprintf(w, "Feed the animal = %s\n", newFeed)
 		file := "/var/sensors/instructions.txt"
-		cmd := exec.Command("/bin/bash -c 'echo feed > " + file + "'")
-		err = cmd.Run()
-		if err != nil {
-			log.Printf("Running command failed with error:  %v", err)
-		}
+		printToFile(file, "feed")
 	default:
 		log.Info("Sorry, only GET and POST methods are supported.")
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
