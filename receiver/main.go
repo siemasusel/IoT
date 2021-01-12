@@ -46,9 +46,9 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Try to decode the request body into the struct. If there is an error,
 		// respond to the client with the error message and a 400 status code.
-		log.Info(r.Body)
 		err := json.NewDecoder(r.Body).Decode(&temperature)
 		if err != nil {
+			log.Fatal("TemperatureHandler" + err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -80,7 +80,7 @@ func getTemperatureOutput(currentTemp float64, newTemp float64) {
 		cmd := exec.Command("temp_high > " + file)
 		b, err := cmd.CombinedOutput()
 		if err != nil {
-			log.Printf("Running command failed with error:  %v", err)
+			log.Fatalf("Running command failed with error:  %v", err)
 		}
 		fmt.Printf("%s\n", string(b))
 	} else if currentTemp > newTemp {
@@ -88,7 +88,7 @@ func getTemperatureOutput(currentTemp float64, newTemp float64) {
 		cmd := exec.Command("temp_low > " + file)
 		b, err := cmd.CombinedOutput()
 		if err != nil {
-			log.Printf("Running command failed with error:  %v", err)
+			log.Fatalf("Running command failed with error:  %v", err)
 		}
 		fmt.Printf("%s\n", string(b))
 	} else {
@@ -105,11 +105,11 @@ func HumidityHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		var humidity HumidityValue
 
-		log.Info(r.Body)
 		// Try to decode the request body into the struct. If there is an error,
 		// respond to the client with the error message and a 400 status code.
 		err := json.NewDecoder(r.Body).Decode(&humidity)
 		if err != nil {
+			log.Fatal("HumidityHandler" + err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
