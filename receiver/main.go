@@ -77,13 +77,13 @@ func getCurrentTemperature() (float64, error) {
 func getTemperatureOutput(currentTemp float64, newTemp float64) {
 	file := "/var/sensors/instructions.txt"
 	if currentTemp < newTemp {
-		log.Info("Heat")
+		log.Info("Heat debug")
 		cmd := exec.Command("echo 'temp_high' > " + file)
 		b, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Fatalf("Running command failed with error:  %v", err)
 		}
-		fmt.Printf("%s\n", string(b))
+		log.Info(string(b))
 	} else if currentTemp > newTemp {
 		log.Info("Cool")
 		cmd := exec.Command("echo 'temp_low' > " + file)
@@ -91,7 +91,7 @@ func getTemperatureOutput(currentTemp float64, newTemp float64) {
 		if err != nil {
 			log.Fatalf("Running command failed with error:  %v", err)
 		}
-		fmt.Printf("%s\n", string(b))
+		log.Info(string(b))
 	} else {
 		log.Info("temperature OK")
 	}
