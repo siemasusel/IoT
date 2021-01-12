@@ -9,5 +9,7 @@ chmod 755 /usr/iot/entry_receiver
 systemctl daemon-reload
 systemctl start iot_collector
 systemctl enable iot_collector
+systemctl restart iot_collector
 systemctl start iot_receiver
 systemctl enable iot_receiver
+systemctl restart iot_receiver
