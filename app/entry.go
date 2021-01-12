@@ -1,9 +1,9 @@
 package main
 
-// ssh -Llocalhost:8086:10.72.1.106:8086 jtomasik@pluton.kt.agh.edu.pl # raspberry (raspberry:8086 -> pluton -> influx)
-// ssh -Llocalhost:9944:localhost:27000 jtomasik@pluton.kt.agh.edu.pl # server IOT (serwer:9944 -> pluton -> pluton:27000)
-// ssh -R 27000:127.0.0.1:9000 jtomasik@pluton.kt.agh.edu.pl # raspberry (reverse pluton:27000 -> raspberry -> raspberry:9000)
-// ssh -Llocalhost:8080:10.72.1.106:80 jtomasik@pluton.kt.agh.edu.pl # client (client:8080 -> pluton -> apache)
+// ssh -o ExitOnForwardFailure=yes -f -N -L localhost:8086:10.72.1.106:8086 jtomasik@pluton.kt.agh.edu.pl # raspberry (raspberry:8086 -> pluton -> influx)
+// ssh -o ExitOnForwardFailure=yes -f -N -L localhost:9944:localhost:27000 jtomasik@pluton.kt.agh.edu.pl # server IOT (serwer:9944 -> pluton -> pluton:27000)
+// ssh -o ExitOnForwardFailure=yes -f -N -R 27000:127.0.0.1:9000 jtomasik@pluton.kt.agh.edu.pl # raspberry (reverse pluton:27000 -> raspberry -> raspberry:9000)
+// ssh -o ExitOnForwardFailure=yes -f -N -L localhost:8080:10.72.1.106:80 jtomasik@pluton.kt.agh.edu.pl # client (client:8080 -> pluton -> apache)
 // GOOS=linux GOARCH=arm GOARM=7 go build -o bin/entry entry.go
 
 import (
