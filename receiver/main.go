@@ -79,19 +79,17 @@ func getTemperatureOutput(currentTemp float64, newTemp float64) {
 	if currentTemp < newTemp {
 		log.Info("Heat debug")
 		cmd := exec.Command("echo 'temp_high' > " + file)
-		b, err := cmd.CombinedOutput()
+		err := cmd.Run()
 		if err != nil {
 			log.Fatalf("Running command failed with error:  %v", err)
 		}
-		log.Info(string(b))
 	} else if currentTemp > newTemp {
 		log.Info("Cool")
 		cmd := exec.Command("echo 'temp_low' > " + file)
-		b, err := cmd.CombinedOutput()
+		err := cmd.Run()
 		if err != nil {
 			log.Fatalf("Running command failed with error:  %v", err)
 		}
-		log.Info(string(b))
 	} else {
 		log.Info("temperature OK")
 	}
@@ -166,11 +164,10 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 		// fmt.Fprintf(w, "Feed the animal = %s\n", newFeed)
 		file := "/var/sensors/instructions.txt"
 		cmd := exec.Command("echo 'feed' > " + file)
-		b, err := cmd.CombinedOutput()
+		err = cmd.Run()
 		if err != nil {
 			log.Printf("Running command failed with error:  %v", err)
 		}
-		fmt.Printf("%s\n", string(b))
 	default:
 		log.Info("Sorry, only GET and POST methods are supported.")
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
