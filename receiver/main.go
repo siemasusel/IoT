@@ -61,6 +61,7 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 
 		// fmt.Fprintf(w, "New temperature = %s\n", temperature.Value)
 	default:
+		log.Info("Sorry, only GET and POST methods are supported.")
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
 }
@@ -118,6 +119,7 @@ func HumidityHandler(w http.ResponseWriter, r *http.Request) {
 		log.Info("New humidity: " + newHumidity)
 		// fmt.Fprintf(w, "New humidity = %s\n", newHumidity)
 	default:
+		log.Info("Sorry, only GET and POST methods are supported.")
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
 }
@@ -170,6 +172,7 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Printf("%s\n", string(b))
 	default:
+		log.Info("Sorry, only GET and POST methods are supported.")
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
 }
