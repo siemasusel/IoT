@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -37,13 +38,12 @@ func MakeReceiver(ip string, port int) Receiver {
 
 func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 	log.Info("Endpoint Hit: TemperatureHandler")
-	log.Info("DEBUG: TemperatureHandler")
 	switch r.Method {
 	case "GET":
 		log.Info("GET current Temperature")
 	case "POST":
 		var temperature TempValue
-		log.Info("POST: TemperatureHandler")
+
 		// Try to decode the request body into the struct. If there is an error,
 		// respond to the client with the error message and a 400 status code.
 		err := json.NewDecoder(r.Body).Decode(&temperature)
@@ -71,7 +71,7 @@ func getCurrentTemperature() (float64, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return strconv.ParseFloat(string(content), 64)
+	return strconv.ParseFloat(strings.TrimSuffix(string(content), "\n"), 64)
 }
 
 func getTemperatureOutput(currentTemp float64, newTemp float64) {
@@ -129,7 +129,7 @@ func getCurrentHumidity() (float64, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return strconv.ParseFloat(string(content), 64)
+	return strconv.ParseFloat(strings.TrimSuffix(string(content), "\n"), 64)
 }
 
 func getHumidityOutput(currentHumidity float64, newHumidity float64) {
