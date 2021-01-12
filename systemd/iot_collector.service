@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/usr/iot/entry_collector
+ExecStart=/usr/iot/entry_collector --interval=1m --db_name=device_metrics
 
 [Install]
 WantedBy=multi-user.target
