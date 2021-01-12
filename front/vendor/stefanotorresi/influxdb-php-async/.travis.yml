@@ -1,0 +1,48 @@
+sudo: required
+dist: trusty
+language: php
+
+services:
+  - docker
+
+matrix:
+  fast_finish: true
+  include:
+    - php: '7.1'
+      env:
+        - DEPS=lowest
+
+    - php: '7.1'
+      env:
+        - DEPS=locked
+        - CHECK_CS=true
+
+    - php: '7.1'
+      env:
+        - DEPS=latest
+
+env:
+  global:
+    - COMPOSER_ARGS="--no-interaction"
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - vendor
+
+before_install:
+  - if [[ $XDEBUG != 'true' && "$(php --version | grep xdebug -ci)" -ge 1 ]]; then phpenv config-rm xdebug.ini ; fi
+
+install:
+  - if [[ $DEPS == 'latest' ]]; then travis_retry composer update $COMPOSER_ARGS ; fi
+  - if [[ $DEPS == 'locked' ]]; then travis_retry composer install $COMPOSER_ARGS ; fi
+  - if [[ $DEPS == 'lowest' ]]; then travis_retry composer update --prefer-lowest --prefer-stable $COMPOSER_ARGS ; fi
+  - composer show
+
+before_script:
+  - docker run -d -p 8086:8086 influxdb:alpine
+  - docker ps -a
+
+script:
+  - composer test
+  - if [[ $CHECK_CS == 'true' ]]; then composer cs-check ; fi

@@ -1,0 +1,37 @@
+{
+  "name": "influxdata/influxdb-client-php",
+  "description": "InfluxDB (v2+) Client Library for PHP",
+  "keywords": [
+    "InfluxDB"
+  ],
+  "homepage": "https://www.github.com/influxdata/influxdb-client-php",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.1",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "guzzlehttp/guzzle": "^6.2|^7.0.1"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "~2.12",
+    "phpspec/phpspec": ">5.0",
+    "phpunit/phpunit": "^7.4",
+    "squizlabs/php_codesniffer": "~2.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "InfluxDB2\\": "src/InfluxDB2"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "InfluxDB2\\": "test/InfluxDB2"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit tests",
+    "test-coverage": "vendor/bin/phpunit tests --log-junit build/junit.xml -v --coverage-html=build/coverage-report"
+  }
+
+}

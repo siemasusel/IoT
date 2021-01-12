@@ -1,0 +1,10 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^7.0",
+        "influxdata/influxdb-client-php": "^1.9",
+        "influxdb/influxdb-php": "^1.15",
+        "psr/log": "^1.1",
+        "stefanotorresi/influxdb-php-async": "^0.5.0",
+        "laminas/laminas-httphandlerrunner": "^1.3"
+    }
+}

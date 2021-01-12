@@ -1,0 +1,147 @@
+#
+# The MIT License
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+
+version: 2.1
+
+commands:
+  influxdb-onboarding:
+    steps:
+      - run:
+          name: "Post onBoarding request to InfluxDB 2"
+          command: sh ./scripts/influxdb-onboarding.sh
+  prepare:
+    description: "Prepare environment to tests"
+    steps:
+      - checkout
+      - influxdb-onboarding
+  test:
+    parameters:
+      php-image:
+        type: string
+      guzzle-version:
+        type: string
+    steps:
+      - restore_cache:
+          name: Restoring Composer Cache
+          keys:
+              - composer-v1-{{ checksum "composer.json" }}-<< parameters.php-image >>-<< parameters.guzzle-version >>
+              - composer-v1-{{ checksum "composer.json" }}-<< parameters.php-image >>
+              - composer-v1-{{ checksum "composer.json" }}
+              - composer-v1-
+      - run:
+          name: Install dependencies
+          command: |
+            composer install -n --prefer-dist
+            composer require guzzlehttp/guzzle:<< parameters.guzzle-version >>
+      - run:
+          name: Run tests
+          command: |
+            export XDEBUG_MODE=coverage
+            vendor/bin/phpunit tests --coverage-clover=coverage.xml
+      - run:
+          name: "Collecting coverage reports"
+          command: bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+      - save_cache:
+          name: Saving Cache
+          key: composer-v1-{{ checksum "composer.json" }}-<< parameters.php-image >>
+          paths:
+            - vendor
+          when: always
+  storing-test-results:
+    steps:
+      - store_test_results:
+          path: build/
+
+jobs:
+  tests-php:
+    parameters:
+      php-image:
+        type: string
+        default: &default-php-image "circleci/php:7.4"
+      influxdb-image:
+        type: string
+        default: &default-influxdb-image "influxdb:v2.0.2"
+      guzzle-version:
+        type: string
+        default: "6.5.3"
+    docker:
+      - image: << parameters.php-image >>
+      - image: &influx-image quay.io/influxdb/<< parameters.influxdb-image >>
+        environment:
+          INFLUXD_HTTP_BIND_ADDRESS: :8086
+    steps:
+      - prepare
+      - test:
+          php-image: << parameters.php-image >>
+          guzzle-version: << parameters.guzzle-version>>
+      - storing-test-results
+  tests-windows:
+    machine:
+      image: "windows-server-2019-vs2019:stable"
+      resource_class: windows.medium
+      shell: bash
+    steps:
+      - checkout
+      - run: choco install php --version=7.3.15 --params '"/ThreadSafe /InstallDir:c:\tools\php"'
+      - run: cp ~/project/.circleci/php.ini /c/tools/php/
+      - run: /c/tools/php/php.exe -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+      - run: /c/tools/php/php.exe composer-setup.php
+      - run: /c/tools/php/php.exe composer.phar install
+      - run: |
+          export PATH=/c/tools/php/:$PATH
+          ./vendor/bin/phpunit --exclude-group "integration" --log-junit build/junit.xml
+      - storing-test-results
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - tests-php:
+          name: php-7.4
+      - tests-php:
+          name: php-7.4-guzzle-7
+          guzzle-version: "7.0.1"
+      - tests-php:
+          name: php-7.4-nightly
+          influxdb-image: "influx:nightly"
+      - tests-php:
+          name: php-7.3
+          php-image: "circleci/php:7.3"
+      - tests-php:
+          name: php-7.2
+          php-image: "circleci/php:7.2"
+      - tests-php:
+          name: php-7.1
+          php-image: "circleci/php:7.1"
+      - tests-windows:
+          name: php-windows
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - tests-php
