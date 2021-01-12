@@ -78,7 +78,7 @@ func getTemperatureOutput(currentTemp float64, newTemp float64) {
 	file := "/var/sensors/instructions.txt"
 	if currentTemp < newTemp {
 		log.Info("Heat")
-		cmd := exec.Command("temp_high > " + file)
+		cmd := exec.Command("echo 'temp_high' > " + file)
 		b, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Fatalf("Running command failed with error:  %v", err)
@@ -86,7 +86,7 @@ func getTemperatureOutput(currentTemp float64, newTemp float64) {
 		fmt.Printf("%s\n", string(b))
 	} else if currentTemp > newTemp {
 		log.Info("Cool")
-		cmd := exec.Command("temp_low > " + file)
+		cmd := exec.Command("echo 'temp_low' > " + file)
 		b, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Fatalf("Running command failed with error:  %v", err)
@@ -165,7 +165,7 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 		log.Info("Feed the animal: " + newFeed)
 		// fmt.Fprintf(w, "Feed the animal = %s\n", newFeed)
 		file := "/var/sensors/instructions.txt"
-		cmd := exec.Command("feed > " + file)
+		cmd := exec.Command("echo 'feed' > " + file)
 		b, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Printf("Running command failed with error:  %v", err)
