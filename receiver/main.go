@@ -58,7 +58,7 @@ func TemperatureHandler(w http.ResponseWriter, r *http.Request) {
 		checkFatal(err)
 		getTemperatureOutput(currentTemperature, newTemperature)
 
-		fmt.Fprintf(w, "New temperature = %s\n", temperature.Value)
+		// fmt.Fprintf(w, "New temperature = %s\n", temperature.Value)
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
@@ -112,9 +112,9 @@ func HumidityHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		newHumidity := humidity.Value
-		fmt.Fprintf(w, "Post from website! JSON humidity = %v\n", newHumidity)
+		// fmt.Fprintf(w, "Post from website! JSON humidity = %v\n", newHumidity)
 		log.Info("New humidity: " + newHumidity)
-		fmt.Fprintf(w, "New humidity = %s\n", newHumidity)
+		// fmt.Fprintf(w, "New humidity = %s\n", newHumidity)
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
@@ -154,11 +154,11 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		fmt.Fprintf(w, "Post from website! JSON feed = %v\n", feed.Value)
+		// fmt.Fprintf(w, "Post from website! JSON feed = %v\n", feed.Value)
 
 		newFeed := feed.Value
 		log.Info("Feed the animal: " + newFeed)
-		fmt.Fprintf(w, "Feed the animal = %s\n", newFeed)
+		// fmt.Fprintf(w, "Feed the animal = %s\n", newFeed)
 		file := "/var/sensors/instructions.txt"
 		cmd := exec.Command("feed > " + file)
 		b, err := cmd.CombinedOutput()
@@ -186,9 +186,7 @@ func (rec *Receiver) Run() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	go func() {
-		log.Fatal(srv.ListenAndServe())
-	}()
+	log.Fatal(srv.ListenAndServe())
 }
 
 func checkFatal(err error) {

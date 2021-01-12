@@ -1,0 +1,13 @@
+[Unit]
+Description=IoT collector
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/iot/entry_collector
+
+[Install]
+WantedBy=multi-user.target
