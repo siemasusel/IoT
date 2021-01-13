@@ -85,9 +85,11 @@ func getTemperatureOutput(currentTemp float64, newTemp float64) {
 	if currentTemp < newTemp {
 		log.Info("Heat")
 		printToFile(file, "temp_high")
+		printToFile("/var/sensors/temp_set.txt", fmt.Sprintf("%.1f", newTemp))
 	} else if currentTemp > newTemp {
 		log.Info("Cool")
 		printToFile(file, "temp_low")
+		printToFile("/var/sensors/temp_set.txt", fmt.Sprintf("%.1f", newTemp))
 	} else {
 		log.Info("temperature OK")
 	}
@@ -135,9 +137,11 @@ func getHumidityOutput(currentHumidity float64, newHumidity float64) {
 	if currentHumidity < newHumidity {
 		log.Info("high")
 		printToFile(file, "hum_high")
+		printToFile("/var/sensors/humidity_set.txt", fmt.Sprintf("%.1f", newHumidity))
 	} else if currentHumidity > newHumidity {
 		log.Info("low")
 		printToFile(file, "hum_low")
+		printToFile("/var/sensors/humidity_set.txt", fmt.Sprintf("%.1f", newHumidity))
 	} else {
 		log.Info("temperature OK")
 	}
