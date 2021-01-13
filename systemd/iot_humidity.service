@@ -1,0 +1,13 @@
+[Unit]
+Description=IoT collector
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/bin/python3 /home/pi/Desktop/temp_humidity/humidity.py
+
+[Install]
+WantedBy=multi-user.target
