@@ -81,7 +81,7 @@ func getCurrentTemperature() (float64, error) {
 }
 
 func getTemperatureOutput(currentTemp float64, newTemp float64) {
-	file := "/var/sensors/instructions.txt"
+	file := "/var/sensors/temp.txt"
 	if currentTemp < newTemp {
 		log.Info("Heat")
 		printToFile(file, "temp_high")
@@ -110,10 +110,12 @@ func HumidityHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		newHumidity := humidity.Value
-		// fmt.Fprintf(w, "Post from website! JSON humidity = %v\n", newHumidity)
-		log.Info("New humidity: " + newHumidity)
-		// fmt.Fprintf(w, "New humidity = %s\n", newHumidity)
+		log.Info("New humidity: " + humidity.Value)
+		newHumidity, err := strconv.ParseFloat(humidity.Value, 64)
+		checkFatal(err)
+		currentHumidity, err := getCurrentHumidity()
+		checkFatal(err)
+		getHumidityOutput(currentHumidity, newHumidity)
 	default:
 		log.Info("Sorry, only GET and POST methods are supported.")
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
@@ -129,12 +131,15 @@ func getCurrentHumidity() (float64, error) {
 }
 
 func getHumidityOutput(currentHumidity float64, newHumidity float64) {
+	file := "/var/sensors/humidity.txt"
 	if currentHumidity < newHumidity {
-		log.Info("Too dry")
+		log.Info("high")
+		printToFile(file, "hum_high")
 	} else if currentHumidity > newHumidity {
-		log.Info("Too wet")
+		log.Info("low")
+		printToFile(file, "hum_low")
 	} else {
-		log.Info("Humidity OK")
+		log.Info("temperature OK")
 	}
 }
 
