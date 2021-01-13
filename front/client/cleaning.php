@@ -13,7 +13,6 @@ $query = mysqli_query($db, "SELECT * FROM cleaning where cln_usr_id='$cln_usr_id
 $row = mysqli_fetch_array($query);
 $last = $row['cln_date'];
 $next = $row['cln_next'];
-$now = time("Y/m/d"); 
 
 ?>
 <!DOCTYPE html>
@@ -44,8 +43,8 @@ $now = time("Y/m/d");
       <nav class="navbar navbar-expand-xl">
         <div class="container h-100">
           <a class="navbar-brand" href="index.php">
-            <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
-          </a>
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
+        </a>
           <button
             class="navbar-toggler ml-auto mr-0"
             type="button"
@@ -110,7 +109,7 @@ $now = time("Y/m/d");
             </ul>
             <ul class="navbar-nav">
               <li class="nav-item">
-                <a class="nav-link d-block" href="login.php">
+                <a class="nav-link d-block" href="../logout.php">
                   <b>Logout</b>
                 </a>
               </li>
@@ -130,7 +129,7 @@ $now = time("Y/m/d");
                     name="last
 "
                     type="date"
-		    value="<?php echo /*$last*/ $now; ?>"
+		    value="<?php echo $last; ?>"
                     class="form-control validate"
 readonly
                   />
@@ -153,12 +152,12 @@ readonly
                 </div>
               </form>
 			  <div class="form-group col-lg-12">
-			  <label for="date">Time to next cleaning</label>
+			  <label for="date">Time to next cleaning [days]</label>
                     <input
                             id="next_clean"
                             name="next_clean"
                             type="text"
-			value="<?php echo (strtotime($next)- strtotime($now))/(60 * 60 * 24); ?>"
+			value="<?php echo round((strtotime($next) - strtotime("now"))/(60 * 60 * 24)) ; ?>"
                             class="form-control validate"
                             readonly
                     />

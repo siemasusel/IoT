@@ -49,21 +49,9 @@ $maxhmd = $row['spc_max_hmd'];
 <nav class="navbar navbar-expand-xl">
     <div class="container h-100">
         <a class="navbar-brand" href="index.php">
-            <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
         </a>
-        <button
-                class="navbar-toggler ml-auto mr-0"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <i class="fas fa-bars tm-nav-icon"></i>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+ 	<div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto h-100">
                 <li class="nav-item">
                     <a class="nav-link" href="list-accounts.php">
@@ -128,19 +116,10 @@ $maxhmd = $row['spc_max_hmd'];
                                     onclick="document.getElementById('fileInput').click();"
                             ></i>
                         </div>
-                        <div class="custom-file mt-3 mb-3">
-                            <input id="fileInput" type="file" style="display:none;"/>
-                            <input
-                                    type="button"
-                                    class="btn btn-primary btn-block mx-auto"
-                                    value="Change image"
-                                    onclick="document.getElementById('fileInput').click();"
-                            />
-                        </div>
-                    </div>
+                      </div>
                     <div class="col-xl-6 col-lg-6 col-md-12">
                            
-                            <div class="row">
+                            <div class="row"> 
 								<div class="form-group mb-3">
 									<label>
 									<b>Temperature [°C]</b>

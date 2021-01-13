@@ -139,27 +139,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <div>
       <nav class="navbar navbar-expand-xl">
         <div class="container h-100">
-          <a class="navbar-brand" href="index.html">
-            <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
-          </a>
-          <button
-            class="navbar-toggler ml-auto mr-0"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <i class="fas fa-bars tm-nav-icon"></i>
-          </button>
-
-
+             <a class="navbar-brand" href="index.php">
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
+             </a>
         </div>
       </nav>
     </div>
 
-    <div class="container tm-mt-big tm-mb-big">
+    <div class="container tm-mt-big tm-mb-big"> 
       <div class="row">
         <div class="col-12 mx-auto tm-login-col">
           <div class="tm-bg-primary-dark tm-block tm-block-h-auto">

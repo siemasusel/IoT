@@ -47,7 +47,7 @@ $terrarium  = $row['usr_trm_id'];
       <nav class="navbar navbar-expand-xl">
     <div class="container h-100">
         <a class="navbar-brand" href="index.php">
-            <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
         </a>
                   <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto h-100">

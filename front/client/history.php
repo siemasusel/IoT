@@ -86,7 +86,7 @@
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link d-block" href="login.php">
+                    <a class="nav-link d-block" href="../logout.php">
                          <b>Logout</b>
                     </a>
                 </li>

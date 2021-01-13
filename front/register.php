@@ -1,95 +1,133 @@
 <?php
-// Include config file
+function function_alert($message)
+{
+    echo "<script>alert('$message');</script>";
+}
+
 require_once "config.php";
- 
+
 // Define variables and initialize with empty values
 $username = $password = $confirm_password = "";
 $username_err = $password_err = $confirm_password_err = "";
- 
+
 // Processing form data when form is submitted
-if($_SERVER["REQUEST_METHOD"] == "POST"){
- 
-    // Validate username
-    if(empty(trim($_POST["username"]))){
-        $username_err = "Please enter a username.";
-    } else{
+if ($_SERVER["REQUEST_METHOD"] == "POST")
+{
+
+    // Validate username 
+    if (empty(trim($_POST["username"])))
+    {
+        $error = "Please enter a username.";
+    }
+    else
+    {
         // Prepare a select statement
         $sql = "SELECT usr_id FROM users WHERE usr_email = ?";
-        
-        if($stmt = mysqli_prepare($db, $sql)){
+
+        if ($stmt = mysqli_prepare($db, $sql))
+        {
             // Bind variables to the prepared statement as parameters
             mysqli_stmt_bind_param($stmt, "s", $param_username);
-            
+
             // Set parameters
             $param_username = trim($_POST["username"]);
-            
+
             // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
+            if (mysqli_stmt_execute($stmt))
+            {
                 /* store result */
                 mysqli_stmt_store_result($stmt);
-                
-                if(mysqli_stmt_num_rows($stmt) == 1){
-                    $username_err = "This username is already taken.";
-                } else{
+
+                if (mysqli_stmt_num_rows($stmt) == 1)
+                {
+                    $error = "This username is already taken.";
+                }
+                else
+                {
                     $username = trim($_POST["username"]);
                 }
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
+            }
+            else
+            {
+                $error = "Oops! Something went wrong. Please try again later.";
             }
 
             // Close statement
             mysqli_stmt_close($stmt);
         }
     }
-    
+
     // Validate password
-    if(empty(trim($_POST["password"]))){
-        $password_err = "Please enter a password.";     
-    } elseif(strlen(trim($_POST["password"])) < 6){
-        $password_err = "Password must have atleast 6 characters.";
-    } else{
+    if (empty(trim($_POST["password"])))
+    {
+        $error = "Please enter a password.";
+    }
+    elseif (strlen(trim($_POST["password"])) < 6)
+    {
+        $error = "Password must have at least 6 characters.";
+    }
+    else
+    {
         $password = trim($_POST["password"]);
     }
-    
+
     // Validate confirm password
-    if(empty(trim($_POST["password2"]))){
-        $confirm_password_err = "Please confirm password.";     
-    } else{
+    if (empty(trim($_POST["password2"])))
+    {
+        $error = "Please confirm password.";
+    }
+    else
+    {
         $confirm_password = trim($_POST["password2"]);
-        if(empty($password_err) && ($password != $confirm_password)){
-            $confirm_password_err = "Password did not match.";
+        if (empty($error) && ($password != $confirm_password))
+        {
+            $error = "Password did not match.";
         }
     }
-    
+
     // Check input errors before inserting in database
-    if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
-        
+    if (!isset($error))
+    {
+
         // Prepare an insert statement
         $sql = "INSERT INTO users (usr_email, usr_password) VALUES (?, ?)";
-         
-        if($stmt = mysqli_prepare($db, $sql)){
+
+        if ($stmt = mysqli_prepare($db, $sql))
+        {
             // Bind variables to the prepared statement as parameters
             mysqli_stmt_bind_param($stmt, "ss", $param_username, $param_password);
-            
+
             // Set parameters
             $param_username = $username;
             $param_password = password_hash($password, PASSWORD_DEFAULT); // Creates a password hash
-            
             // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
+            if (mysqli_stmt_execute($stmt))
+            {
                 // Redirect to login page
-                header("location: login.php");
-            } else{
-                echo "Something went wrong. Please try again later.";
+                if (!isset($error))
+                {
+                    header("location: login.php");
+                }
+
+            }
+            else
+            {
+                $error = "Something went wrong. Please try again later.";
             }
 
             // Close statement
             mysqli_stmt_close($stmt);
         }
     }
-    
+
     // Close connection
     mysqli_close($db);
+
+    if (isset($error))
+    {
+        function_alert($error);
+    }
+
 }
 ?>
 <!DOCTYPE html>
@@ -119,23 +157,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <div>
       <nav class="navbar navbar-expand-xl">
         <div class="container h-100">
-          <a class="navbar-brand">
-            <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
-          </a>
-          <button
-            class="navbar-toggler ml-auto mr-0"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <i class="fas fa-bars tm-nav-icon"></i>
-          </button>
-
-
-        </div>
+             <a class="navbar-brand" href="index.php">
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
+             </a>
+	 </div>
       </nav>
     </div>
 

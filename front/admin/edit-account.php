@@ -16,12 +16,7 @@ $lastname = $row['usr_last_name'];
 $email    = $row['usr_email'];
 $premium  = $row['usr_premium'];
 $terrarium  = $row['usr_trm_id'];
-
-$query_prm  = mysqli_query($db, "SELECT * FROM premium where prm_usr_id='$usr_id' and prm_archive='0' and prm_added='1'");
-
-$row      = mysqli_fetch_array($query_prm);
-$end_date     = $row['prm_end_date'];
-
+$end_date     = $row['usr_premium_end_date'];
 
 ?>
 <!DOCTYPE html>
@@ -52,20 +47,8 @@ $end_date     = $row['prm_end_date'];
       <nav class="navbar navbar-expand-xl">
     <div class="container h-100">
         <a class="navbar-brand" href="index.php">
-            <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
         </a>
-        <button
-                class="navbar-toggler ml-auto mr-0"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <i class="fas fa-bars tm-nav-icon"></i>
-        </button>
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto h-100">
                 <li class="nav-item">
@@ -141,7 +124,7 @@ echo $email;
                   />
                 </div>
   <div class="form-group col-lg-6">
-                  <label for="password">Terrarium ID</label>
+                  <label for="terrarium">Terrarium ID</label>
                   <input
                     id="animal"
                     name="terrarium"
@@ -196,6 +179,29 @@ echo $end_date;
                 </div>
                 <div class="col-12">
                   <a class="btn btn-primary btn-block" href="account.php?id=<?php echo $usr_id; ?>"> Go Back </a>
+                </div>
+              </form>
+<form action="change-password.php?id=<?php echo $usr_id; ?>" method="post" class="tm-signup-form row">
+               <div class="form-group mt-3">
+                    <label for="password">Change password</label>
+                    <input
+                      name="password"
+                      type="password"
+                      class="form-control validate"
+                      id="password"
+                      value=""
+                      required 
+                    />
+                  </div> 
+
+                <div class="form-group col-lg-12">
+                  <label class="tm-hide-sm">&nbsp;</label>
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-block"
+                  >
+                    Submit New Password
+                  </button>
                 </div>
               </form>
             </div>

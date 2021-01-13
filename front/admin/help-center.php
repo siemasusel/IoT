@@ -17,7 +17,7 @@ $search_topic = $_POST["search_topic"];
 $search_open = $_POST["search_open"];
 $search_closed = $_POST["search_closed"];
 $statuses = "Open";
-if (isset($search_open) and isset($search_closed) and !strcmp($search_open, 'on') == 0 and strcmp($search_closed, 'on') == 0)
+if (!strcmp($search_open, 'on') == 0 and strcmp($search_closed, 'on') == 0)
 {
     $statuses = "Closed";
 }
@@ -54,20 +54,8 @@ $query_prbs = mysqli_query($db, "SELECT * FROM problems left join users on prb_u
 <nav class="navbar navbar-expand-xl">
     <div class="container h-100">
         <a class="navbar-brand" href="index.php">
-            <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
         </a>
-        <button
-                class="navbar-toggler ml-auto mr-0"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <i class="fas fa-bars tm-nav-icon"></i>
-        </button>
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto h-100">
                 <li class="nav-item">

@@ -16,11 +16,7 @@ $lastname = $row['usr_last_name'];
 $email    = $row['usr_email'];
 $premium  = $row['usr_premium'];
 $terrarium  = $row['usr_trm_id'];
-
-$query_prm  = mysqli_query($db, "SELECT * FROM premium where prm_usr_id='$usr_id' and prm_archive='0' and prm_added='1'");
-
-$row      = mysqli_fetch_array($query_prm);
-$end_date     = $row['prm_end_date'];
+$end_date     = $row['usr_premium_end_date'];
 
 ?>
 
@@ -52,27 +48,15 @@ $end_date     = $row['prm_end_date'];
       <nav class="navbar navbar-expand-xl">
     <div class="container h-100">
         <a class="navbar-brand" href="index.php">
-            <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
         </a>
-        <button
-                class="navbar-toggler ml-auto mr-0"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <i class="fas fa-bars tm-nav-icon"></i>
-        </button>
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto h-100">
                 <li class="nav-item">
                     <a class="nav-link active" href="list-accounts.php">
                         <i class="fas fa-user"></i> Accounts
                     </a>
-                </li>
+                </li> 
                 <li class="nav-item">
                     <a class="nav-link" href="list-species.php">
                         <i class="fas fa-frog"></i> Species

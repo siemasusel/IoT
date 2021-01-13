@@ -33,14 +33,8 @@ session_start();
     <nav class="navbar navbar-expand-xl">
         <div class="container h-100">
              <a class="navbar-brand" href="index.php">
-<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
              </a>
-            <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fas fa-bars tm-nav-icon"></i>
-            </button>
-
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mx-auto h-100">
                     <li class="nav-item">

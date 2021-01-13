@@ -1,3 +1,19 @@
+<?php
+include ("../config.php");
+session_start();
+
+    if(!isset($_SESSION['username']) or (strcmp($_SESSION['username'],'admin')==0)){
+      header("location: ../login.php");
+      die(); 
+   }
+
+$fdn_usr_id = $_SESSION['id'];
+
+$query = mysqli_query($db, "SELECT * FROM feeding where fdn_usr_id='$fdn_usr_id'");
+$row = mysqli_fetch_array($query);
+$next = $row['fdn_next'];
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,10 +41,9 @@
 <div class="" id="home">
     <nav class="navbar navbar-expand-xl">
         <div class="container h-100">
-            <a class="navbar-brand" href="index.php">
-                <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
-            </a>
-            <button
+           <a class="navbar-brand" href="index.php">
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
+        </a>           <button
                     class="navbar-toggler ml-auto mr-0"
                     type="button"
                     data-toggle="collapse"
@@ -92,7 +107,7 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link d-block" href="login.php">
+                        <a class="nav-link d-block" href="../logout.php">
                             <b>Logout</b>
                         </a>
                     </li>
@@ -104,76 +119,24 @@
         <!div class="row tm-content-row">
 		<div class="tm-block-col tm-col-feeding-history">
 		<div class="tm-bg-primary-dark tm-block tm-feeding-settings">
-            <h2 class="tm-block-title">Time to next feeding</h2>
-			<div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
-                        <div class="tm-product-img-edit mx-auto">
-                    <p class="text-white">Select name</p>
-                    <select class="custom-select">
-                        <option value="0">Select name</option>
-                        <option value="1">Name 1</option>
-                        <option value="2">Name 2</option>
-                        <option value="3">Name 3</option>
-                        <option value="4">Name 4</option>
-                    </select>
-                        </div>
-                    </div>
+            <h2 class="tm-block-title">Days to next feeding</h2>
                 <div class="form-group col-lg-12">
                     <input
                             id="date"
                             name="date"
                             type="text"
-							value="2 days 3 hours"
+value="<?php echo round((strtotime($next) - strtotime("now"))/(60 * 60 * 24)) ; ?>"
+
                             class="form-control validate"
                             readonly
                     />
                 </div>
         </div>
-		</div>
-        <div class="tm-block-col tm-col-feeding-history">
-            <div class="tm-bg-primary-dark tm-block tm-block-history">
-                <h2 class="tm-block-title">History</h2>
-                <div class="tm-product-table-container">
-                    <table class="table table-hover tm-table-small tm-product-table">
-                        <thead>
-                        <tr>
-                            <th scope="col">&nbsp;</th>
-                            <th scope="col">NAME</th>
-                            <th scope="col">DATE</th>
-                            <th scope="col">FOOD</th>
-                            <th scope="col">&nbsp;</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row"><input type="checkbox"/></th>
-                            <td class="tm-product-name">Lorem Ipsum Species 1</td>
-                            <td>28 March 2019</td>
-                            <td>Food 1</td>
-                            <td>
-                                <a href="#" class="tm-product-delete-link">
-                                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row"><input type="checkbox"/></th>
-                            <td class="tm-product-name">Lorem Ipsum Species 2</td>
-                            <td>21 March 2019</td>
-                            <td>Food 2</td>
-                            <td>
-                                <a href="#" class="tm-product-delete-link">
-                                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    </table>
                 </div>
-            </div>
-        </div>
         <!div class="tm-block-col tm-col-feeding-settings">
         <div class="tm-bg-primary-dark tm-block tm-feeding-settings">
             <h2 class="tm-block-title">Feeding Information</h2>
-            <form action="" class="tm-signup-form row">
+            <form action="insert-feeding.php" class="tm-signup-form row">
                 <div class="form-group col-lg-12">
                     <label for="name">Name</label>
                     <input
@@ -186,8 +149,8 @@
                 <div class="form-group col-lg-12">
                     <label for="date">Next feeding</label>
                     <input
-                            id="date"
-                            name="date"
+                            id="next"
+                            name="next"
                             type="date"
                             class="form-control validate"
                     />
@@ -207,7 +170,7 @@
                             type="submit"
                             class="btn btn-primary btn-block"
                     >
-                        Add
+                        Edit
                     </button>
                 </div>
             </form>

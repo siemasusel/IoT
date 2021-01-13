@@ -10,10 +10,10 @@ session_start();
 $first_name = mysqli_real_escape_string($db, $_REQUEST['name']);
 $last_name = mysqli_real_escape_string($db, $_REQUEST['last_name']);
 $email = mysqli_real_escape_string($db, $_REQUEST['email']);
-$premium = mysqli_real_escape_string($db, $_REQUEST['premium']);
+$pass = password_hash('123456', PASSWORD_DEFAULT);
  
 
-$sql = "INSERT INTO users (usr_name, usr_last_name, usr_email, usr_premium) VALUES ('$first_name', '$last_name', '$email', (CASE WHEN '$premium'='on' THEN 1 ELSE 0 END))";
+$sql = "INSERT INTO users (usr_name, usr_last_name, usr_email, usr_password) VALUES ('$first_name', '$last_name', '$email', '$pass')";
 mysqli_query($db, $sql);
 header("Location: list-accounts.php");
 exit();

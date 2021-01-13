@@ -40,10 +40,9 @@ $query = mysqli_query($db, "SELECT * FROM species" . $condition);
 <body id="reportsPage">
 <nav class="navbar navbar-expand-xl">
    <div class="container h-100">
-                <a class="navbar-brand" href="index.php">
-                    <h1 class="tm-site-title mb-0">SMARTARRIUM</h1>
-                </a>
-
+	<a class="navbar-brand" href="index.php">
+		<img src="../resources/img/logo.png" alt="Logo image" class="img-fluid">
+        </a>
                   <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto h-100">
                 <li class="nav-item">
